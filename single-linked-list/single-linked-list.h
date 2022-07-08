@@ -93,7 +93,8 @@ class SingleLinkedList {
         // Возвращает ссылку на самого себя
         // Инкремент итератора, не указывающего на существующий элемент списка, приводит к неопределённому поведению
         BasicIterator& operator++() noexcept {
-            node_ = node_->next_node;
+            assert(this->node_ != nullptr);
+            this->node_ = this->node_->next_node;
             return *this;
         }
 
@@ -111,15 +112,16 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] reference operator*() const noexcept {
-            return node_->value;
-            //return *(node_.value);
+            assert(this->node_ != nullptr);
+            return this->node_->value;
         }
 
         // Операция доступа к члену класса. Возвращает указатель на текущий элемент списка
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] pointer operator->() const noexcept {
-            return &node_->value;
+            assert(this->node_ != nullptr);
+            return &this->node_->value;
         }
 
     private:
@@ -211,13 +213,9 @@ public:
         if (std::distance(begin_range, end_range) == 0) {
             return;
         }
-        std::vector<Type> reverse_values;
-        reverse_values.reserve(std::distance(begin_range, end_range));
+        Iterator begin_list = list.before_begin();
         for (It it = begin_range; it != end_range; it = std::next(it, 1)) {
-            reverse_values.push_back(*it);
-        }
-        for (auto it = reverse_values.rbegin(); it != reverse_values.rend(); ++it) {
-            list.PushFront(*it);
+            begin_list = list.InsertAfter(begin_list, *it);
         }
     }
 
@@ -249,12 +247,8 @@ public:
 
     // Обменивает содержимое списков за время O(1)
     void swap(SingleLinkedList& other) noexcept {
-        Node* tmp_address = this->head_.next_node;
-        size_t tmp_size = this->size_;
-        this->head_.next_node = other.head_.next_node;
-        this->size_ = other.size_;
-        other.head_.next_node = tmp_address;
-        other.size_ = tmp_size;
+        std::swap(this->head_.next_node, other.head_.next_node);
+        std::swap(this->size_, other.size_);
     }
 
     // Вставляет элемент value в начало списка за время O(1)
@@ -278,6 +272,7 @@ public:
      * Если при создании элемента будет выброшено исключение, список останется в прежнем состоянии
     */
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        assert(pos.node_ != nullptr);
         // добавления элемента в пустой список
         if (this->before_begin() == pos) {
             this->PushFront(value);
@@ -299,6 +294,7 @@ public:
     /* Удаляет элемент, следующий за pos.
     * Возвращает итератор на элемент, следующий за удалённым */
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        assert(pos.node_ != nullptr);
         if (this->IsEmpty()) {
             return this->end();
         }
@@ -326,12 +322,12 @@ public:
 
     // Очищает список за время O(N)
     void Clear() noexcept {
-        while (head_.next_node != nullptr) {
-            Node* address_next = head_.next_node->next_node; // адрес последующего элемента за удаляемым
-            delete head_.next_node;
-            head_.next_node = address_next;
+        while (this->head_.next_node != nullptr) {
+            Node* address_next = this->head_.next_node->next_node; // адрес последующего элемента за удаляемым
+            delete this->head_.next_node;
+            this->head_.next_node = address_next;
         }
-        size_ = 0u;
+        this->size_ = 0u;
     }
 
 private:

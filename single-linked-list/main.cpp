@@ -1,4 +1,4 @@
-#include "single-linked-list.h"
+#include "tests.cpp"
 
 int main() {
     tests::AllTestsSingleLinkedList();

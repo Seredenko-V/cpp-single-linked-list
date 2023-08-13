@@ -373,3 +373,47 @@ template <typename Type>
 bool operator>=(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
     return !(lhs < rhs);
 }
+
+
+
+namespace tests {
+    struct DeletionSpy {
+        ~DeletionSpy() {
+            if (deletion_counter_ptr) {
+                ++(*deletion_counter_ptr);
+            }
+        }
+        int* deletion_counter_ptr = nullptr;
+    };
+
+    // Вспомогательный класс, бросающий исключение после создания N-копии
+    struct ThrowOnCopy {
+        ThrowOnCopy() = default;
+        explicit ThrowOnCopy(int& copy_counter) noexcept
+            : countdown_ptr(&copy_counter) {
+        }
+        ThrowOnCopy(const ThrowOnCopy& other)
+            : countdown_ptr(other.countdown_ptr)  //
+        {
+            if (countdown_ptr) {
+                if (*countdown_ptr == 0) {
+                    throw std::bad_alloc();
+                } else {
+                    --(*countdown_ptr);
+                }
+            }
+        }
+        // Присваивание элементов этого типа не требуется
+        ThrowOnCopy& operator=(const ThrowOnCopy& rhs) = delete;
+        // Адрес счётчика обратного отсчёта. Если не равен nullptr, то уменьшается при каждом копировании.
+        // Как только обнулится, конструктор копирования выбросит исключение
+        int* countdown_ptr = nullptr;
+    };
+
+    void TestPopFront(); // Проверка PopFront
+    void TestAccessPositionPrecedingBegin(); // Доступ к позиции, предшествующей begin
+    void TestInsertingElementAfterSpecifiedPosition(); // Вставка элемента после указанной позиции
+    void TestEnsureStrictExceptionSecurityGuarantees(); // Проверка обеспечения строгой гарантии безопасности исключений
+    void TestDeletingElementsAfterSpecifiedPosition(); // Удаление элементов после указанной позиции
+    void AllTestsSingleLinkedList();
+} // namespace tests

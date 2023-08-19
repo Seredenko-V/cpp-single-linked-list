@@ -6,4 +6,4 @@
 * C++17
 
 ## UML-диаграмма
-![UML](https://raw.githubusercontent.com/Seredenko-V/cpp-single-linked-list/c44189dbcfc6bdecb0755a0a5894eef556f9ffdd/single-linked-list/uml-single-linked-list.svg?token=AWESMY5KQCGAW4HF7K4AC6DE3EGOE "UML-diagram single-linked-list")
+![UML](https://raw.githubusercontent.com/Seredenko-V/cpp-single-linked-list/3b1ee5fdddad7725b5913af23588abd081c46b35/single-linked-list/uml-single-linked-list.svg "UML-diagram single-linked-list")
